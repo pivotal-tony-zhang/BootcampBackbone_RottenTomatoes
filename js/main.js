@@ -1,11 +1,11 @@
-function getApiUrl() {
-	return "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?apikey=aw7hfa9sa85uzvuumd8p5teb&callback=?";
+function getApiUrl(type) {
+	return "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/"+type+".json?apikey=aw7hfa9sa85uzvuumd8p5teb&callback=?";
 }
 
-function requestJson(view,collection,inputUrl){
+function requestJson(collection, view, callback,inputUrl){
 	if(navigator.onLine){
 		if(inputUrl===undefined || inputUrl===null){
-			inputUrl = getApiUrl();
+			inputUrl = getApiUrl("box_office");
 		}
 		var req = $.ajax({
 			url : inputUrl,
@@ -13,32 +13,37 @@ function requestJson(view,collection,inputUrl){
 			timeout : 5000
 		});
 		req.success(function(data){
-			onlineResponse(view,collection,data);
+			callback(collection, view, data);
 		});
 		req.error(function() {
-			offlineResponse(view,collection);
+			callback(collection, view, null);
 		});
 	}else{
-		offlineResponse();
+		callback(collection, view, null);
 	}
 }
 
-function offlineResponse(view,collection){
+function initialResponse(collection, view, data){
+	if(data===null){
+		offlineResponse(collection,view);
+	}else{
+		onlineResponse(collection,view,data);
+	}
+}
+
+function offlineResponse(collection,view){
 
 }
 
 function changeList(targetList){
 	if(targetList==="Box Office"){
-		console.log("a");
 		return true;
 	}else if(targetList==="In Theaters"){
-		console.log("b");
+	updateCollection
 		return true;
 	}else if(targetList==="Opening Movies"){
-		console.log("c");
 		return true;
 	}else if(targetList==="Upcoming Movies"){
-		console.log("d");
 		return true;
 	}else{
 		console.log("Illegal command.");
@@ -47,7 +52,7 @@ function changeList(targetList){
 
 }
 
-function onlineResponse(view,collection,data){
+function onlineResponse(collection,view,data){
 	collection.add(data.movies);
 	view.render();
 }
@@ -74,43 +79,13 @@ function init()
 	var MovieView = Backbone.View.extend({
 		className: "movie",
 		template: _.template($("#movie-template").html()),
-		// events: {
-			// "click span.viewDescription" : "viewDescription",
-			// "click span.delete" : "remove"
-		// },
-		// initialize: function(){
-			// _.bindAll(this, 'render', 'unrender', 'viewDescription', 'remove'); 
-			// this.model.bind('change', this.render);
-			// this.model.bind('remove', this.unrender);
-		// },
 		render: function(){
 			this.$el.empty();
 			this.$el.append(this.template(this.model.toJSON()));
-			// $(this.el).html('<span style="color:black;">'+this.model.get('name')+' '+this.model.get('price')+'</span> &nbsp; &nbsp; <span class="viewDescription" style="font-family:sans-serif; color:blue; cursor:pointer;">[View Description]</span> <span class="delete" style="cursor:pointer; color:red; font-family:sans-serif;">[delete]</span>');
-			// return this;
 		}
-		// unrender: function(){
-			// $(this.el).remove();
-		// },
-		// viewDescription: function(){
-			
-		// },
-		// remove: function(){
-			// this.model.destroy();
-		// }
 	});
 	var MoviesListView = Backbone.View.extend({
 		el: "#container",
-		// events: {
-			// 'click button#add': 'addItem'
-		// },
-		// initialize: function(){
-			// _.bindAll(this, 'render', 'addItem', 'appendItem');
-			// this.collection = new Products();
-			// this.collection.bind('add', this.appendItem);
-			// this.counter = 0;
-			// this.render();
-		// },
 		renderMovieView: function(movie) {
 			var movieView = new MovieView({
 				model: movie
@@ -120,37 +95,19 @@ function init()
 		},
 		render: function(){
 			var self = this;
-			// $(this.el).append("<button id='add'>Add list item</button>");
-			// $(this.el).append("<ul></ul>");
-			// _(this.collection.models).each(function(product){
-				// self.appendItem(product);
-			// }, this);
 			_.each(this.collection.models, function (movie) {
-            // Call the renderPostView method
 				self.renderMovieView(movie);
 			});
-		// },
-		// addItem: function(){
-			// this.counter++;
-			// var product = new Product({price: "$" + (1000 + Math.round(Math.random()*1000))/100});
-			// product.set({
-				// name: product.get('name') + " " + this.counter
-			// });
-			// this.collection.add(product);
-		// },
-		// appendItem: function(product){
-			// var productView = new ProductView({
-				// model: product
-			// });
-			// $('ul', this.el).append(productView.render().el);
-		// }
 		}
 	});
 	var movies = new Movies();
 	var moviesListView = new MoviesListView({
 		collection: movies
 	});
-	requestJson(moviesListView, movies);
-	// products.add(productsJson.products);
-	// productsListView.render();
+	u = function(){
+	console.log(moviesListView);
+	console.log(movies);
+	moviesListView.render();
+	}
+	requestJson(movies, moviesListView,initialResponse);
 }
