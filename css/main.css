@@ -1,0 +1,39 @@
+.movie {
+	height: 111px;
+}
+
+.image {
+	float: left;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 5px;
+}
+
+.title {
+	float:left;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.rating {
+	float:right;
+	font-size: 14px;
+	border: 1px solid;
+	padding: 2px;
+	border-radius: 20px;
+}
+
+.content {
+}
+
+.description {
+	font-size: 12px;
+}
+
+#container {
+	
+}
+
+b{
+    display: inline;
+}
