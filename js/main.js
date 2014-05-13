@@ -27,6 +27,26 @@ function offlineResponse(view,collection){
 
 }
 
+function changeList(targetList){
+	if(targetList==="Box Office"){
+		console.log("a");
+		return true;
+	}else if(targetList==="In Theaters"){
+		console.log("b");
+		return true;
+	}else if(targetList==="Opening Movies"){
+		console.log("c");
+		return true;
+	}else if(targetList==="Upcoming Movies"){
+		console.log("d");
+		return true;
+	}else{
+		console.log("Illegal command.");
+		return false;
+	}
+
+}
+
 function onlineResponse(view,collection,data){
 	collection.add(data.movies);
 	view.render();
