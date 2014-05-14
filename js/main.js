@@ -33,6 +33,14 @@ function requestJson(collection, view, callback,inputUrl){
 	}
 }
 
+function fixImageLink(origImageLink){
+	if(origImageLink.indexOf("poster_default") !== -1){
+		return "img/poster_not_found.jpg";
+	}else{
+		return origImageLink;
+	}
+}
+
 function initialResponse(collection, view, data){
 	if(data===null){
 		offlineResponse(collection,view);
@@ -42,7 +50,7 @@ function initialResponse(collection, view, data){
 }
 
 function offlineResponse(collection,view){
-
+	return true;
 }
 
 function changeList(targetList){
@@ -66,26 +74,35 @@ function changeList(targetList){
 }
 
 function onlineResponse(collection,view,data){
-	_.each(data.movies,function(curMovie){
-		if(curMovie.posters.thumbnail.indexOf("poster_default") !== -1){
-			curMovie.posters.thumbnail = "img/poster_not_found.jpg";
-		}
-	});
+	// _.each(data.movies,function(curMovie){
+		// if(curMovie.posters.thumbnail.indexOf("poster_default") !== -1){
+			// curMovie.posters.thumbnail = "img/poster_not_found.jpg";
+		// }
+	// });
 	collection.reset(data.movies);
 	view.render();
 }
 
+function shortenDescription(origDescription){//TODO: fix function so that it works even for initials in names
+	var endOfFirstSentence = origDescription.indexOf(". ");
+	if(endOfFirstSentence==-1){
+		return origDescription;
+	}else{
+		return origDescription.substring(0,endOfFirstSentence) + "...";
+	}
+}
+
 function init() 
 {
-	
 	Backbone.sync = function(method, model, success, error){
 		success();
 	}
 	var Movie = Backbone.Model.extend({
 		idAttribute: 'id',
 		defaults: {
-			title : "No Title found",
+			title : "No Title Found",
 			mpaa_rating : "N/A",
+			synopsis: "No description found.",
 			posters: {
 				thumbnail: "img/poster_not_found.jpg"
 			}
