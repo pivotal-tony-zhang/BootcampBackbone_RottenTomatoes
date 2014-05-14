@@ -66,6 +66,18 @@ function changeList(targetList){
 	}else if(targetList==="Upcoming Movies"){
 		updatePage("upcoming","movies");
 		return true;
+	}else if(targetList==="Top Rentals"){
+		updatePage("top_rentals","dvds");
+		return true;
+	}else if(targetList==="Current Release DVDs"){
+		updatePage("current_releases","dvds");
+		return true;
+	}else if(targetList==="New Release DVDs"){
+		updatePage("new_releases","dvds");
+		return true;
+	}else if(targetList==="Upcoming DVDs"){
+		updatePage("upcoming","dvds");
+		return true;
 	}else{
 		console.log("Illegal command.");
 		return false;
