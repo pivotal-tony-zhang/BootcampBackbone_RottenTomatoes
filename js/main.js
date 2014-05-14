@@ -69,6 +69,15 @@ function initialResponse(collection, view, success, data, type, category, clear)
 		offlineResponse(collection, view, type, category);//TODO: add autopager functionality to offline mode as well
 	}
 }
+function shortenDescription(origDescription){
+	var endCharIndex =  origDescription.search(/[a-z][\.?!][ "]/);//Other version:
+	//var endCharIndex =  origDescription.search(/[a-z]([\.\?!])(?= )/);
+	if(endCharIndex === -1){
+		return origDescription;
+	}else{
+		return origDescription.substring(0,endCharIndex + 2) + "..";
+	}
+}
 function onlineResponse(collection,view,type, category, data, clear){
 	collection.reset(data.movies);
 	if(clear){
@@ -128,14 +137,6 @@ function changeList(targetList){
 		return false;
 	}
 
-}
-function shortenDescription(origDescription){//TODO: fix function so that it works even for initials in names
-	var endCharIndex =  origDescription.search(/[a-z]([\.\?!])(?= )/);
-	if(endCharIndex === -1){
-		return origDescription;
-	}else{
-		return origDescription.substring(0,endCharIndex + 2) + "..";
-	}
 }
 function init() 
 {
