@@ -1,11 +1,21 @@
-function getApiUrl(type) {
+function getMovieApiUrl(type) {
+	if(type===undefined || type===null){
+		type = "box_office";
+	}
 	return "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/"+type+".json?apikey=aw7hfa9sa85uzvuumd8p5teb&callback=?";
+}
+
+function getDvdApiUrl(type) {
+	if(type===undefined || type===null){
+		type = "top_rentals";
+	}
+	return "http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/"+type+".json?apikey=aw7hfa9sa85uzvuumd8p5teb&callback=?";
 }
 
 function requestJson(collection, view, callback,inputUrl){
 	if(navigator.onLine){
 		if(inputUrl===undefined || inputUrl===null){
-			inputUrl = getApiUrl("box_office");
+			inputUrl = getMovieApiUrl();
 		}
 		var req = $.ajax({
 			url : inputUrl,
@@ -37,13 +47,16 @@ function offlineResponse(collection,view){
 
 function changeList(targetList){
 	if(targetList==="Box Office"){
+		updatePage("box_office","movies");
 		return true;
 	}else if(targetList==="In Theaters"){
-	updateCollection
+		updatePage("in_theaters","movies");
 		return true;
 	}else if(targetList==="Opening Movies"){
+		updatePage("opening","movies");
 		return true;
 	}else if(targetList==="Upcoming Movies"){
+		updatePage("upcoming","movies");
 		return true;
 	}else{
 		console.log("Illegal command.");
@@ -53,7 +66,7 @@ function changeList(targetList){
 }
 
 function onlineResponse(collection,view,data){
-	collection.add(data.movies);
+	collection.reset(data.movies);
 	view.render();
 }
 
@@ -79,35 +92,51 @@ function init()
 	var MovieView = Backbone.View.extend({
 		className: "movie",
 		template: _.template($("#movie-template").html()),
+		initialize: function() {
+			this.model.on('change',this.render,this);
+		},
 		render: function(){
-			this.$el.empty();
+			// this.$el.empty();
 			this.$el.append(this.template(this.model.toJSON()));
+			return this;
 		}
 	});
 	var MoviesListView = Backbone.View.extend({
 		el: "#container",
+		initialize: function(){
+			_.bindAll(this,'render','renderMovieView');
+            if(this.model) {
+				this.model.on('change',this.render,this);
+            }
+		},
+		render: function(){
+			var self = this;
+			this.$el.empty();
+			this.collection.each(this.renderMovieView);
+			return this;
+		},
 		renderMovieView: function(movie) {
 			var movieView = new MovieView({
 				model: movie
 			});
-			this.$el.append(movieView.el);
-			movieView.render();
-		},
-		render: function(){
-			var self = this;
-			_.each(this.collection.models, function (movie) {
-				self.renderMovieView(movie);
-			});
+			this.$el.append(movieView.render().el);
+			return this;
 		}
 	});
 	var movies = new Movies();
 	var moviesListView = new MoviesListView({
 		collection: movies
 	});
-	u = function(){
-	console.log(moviesListView);
-	console.log(movies);
-	moviesListView.render();
+	updatePage = function(newType, category){
+		if(category==="movies"){
+			requestJson(movies,moviesListView,initialResponse,getMovieApiUrl(newType));
+			return true;
+		}else if(category==="dvds"){
+			requestJson(movies,moviesListView,initialResponse,getDvdApiUrl(newType));
+			return true;
+		}else{
+			return false;
+		}
 	}
-	requestJson(movies, moviesListView,initialResponse);
+	changeList("Box Office");
 }
