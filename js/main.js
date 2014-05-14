@@ -12,10 +12,20 @@ function getDvdApiUrl(type) {
 	return "http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/"+type+".json?apikey=aw7hfa9sa85uzvuumd8p5teb&callback=?";
 }
 
-function requestJson(collection, view, callback,inputUrl){
+function getApiUrl(type, category){
+	if(category === "movies"){
+		return getMovieApiUrl(type);
+	}else if(category === "dvds"){
+		return getDvdApiUrl(type);
+	}else{
+		return undefined;
+	}
+}
+
+function requestJson(collection, view, callback, type, category, inputUrl){
 	if(navigator.onLine){
-		if(inputUrl===undefined || inputUrl===null){
-			inputUrl = getMovieApiUrl();
+		if(inputUrl===undefined){
+			inputUrl = getApiUrl(type,category);
 		}
 		var req = $.ajax({
 			url : inputUrl,
@@ -23,13 +33,13 @@ function requestJson(collection, view, callback,inputUrl){
 			timeout : 5000
 		});
 		req.success(function(data){
-			callback(collection, view, data);
+			callback(collection, view, true, data, type, category);
 		});
 		req.error(function() {
-			callback(collection, view, null);
+			callback(collection, view, false, null, type, category);
 		});
 	}else{
-		callback(collection, view, null);
+		callback(collection, view, false, null, type, category);
 	}
 }
 
@@ -41,15 +51,24 @@ function fixImageLink(origImageLink){
 	}
 }
 
-function initialResponse(collection, view, data){
-	if(data===null){
-		offlineResponse(collection,view);
+function initialResponse(collection, view, success, data, type, category){
+	if(success){
+		onlineResponse(collection,view,type, category, data);
 	}else{
-		onlineResponse(collection,view,data);
+		offlineResponse(collection, view, type, category);
 	}
 }
 
-function offlineResponse(collection,view){
+function offlineResponse(collection,view, type, category){
+	var offlineData = JSON.parse(localStorage.getItem(category + "_" + type));
+	_.each(offlineData, function(curMovie){
+		curMovie.posters.thumbnail = "img/poster_offline.jpg"
+	});
+	if(offlineData !== undefined){
+		collection.reset(offlineData);
+		view.render();
+		window.scrollTo(0, 0);
+	}
 	return true;
 }
 
@@ -85,12 +104,8 @@ function changeList(targetList){
 
 }
 
-function onlineResponse(collection,view,data){
-	// _.each(data.movies,function(curMovie){
-		// if(curMovie.posters.thumbnail.indexOf("poster_default") !== -1){
-			// curMovie.posters.thumbnail = "img/poster_not_found.jpg";
-		// }
-	// });
+function onlineResponse(collection,view,type, category, data){
+	localStorage.setItem(category + "_" + type, JSON.stringify(data.movies));
 	collection.reset(data.movies);
 	view.render();
 	window.scrollTo(0, 0);
@@ -116,6 +131,7 @@ function init()
 			title : "No Title Found",
 			mpaa_rating : "N/A",
 			synopsis: "No description found.",
+			links: {alternate: "javascript:void(0)"},
 			posters: {
 				thumbnail: "img/poster_not_found.jpg"
 			}
@@ -162,16 +178,9 @@ function init()
 	var moviesListView = new MoviesListView({
 		collection: movies
 	});
-	updatePage = function(newType, category){
-		if(category==="movies"){
-			requestJson(movies,moviesListView,initialResponse,getMovieApiUrl(newType));
-			return true;
-		}else if(category==="dvds"){
-			requestJson(movies,moviesListView,initialResponse,getDvdApiUrl(newType));
-			return true;
-		}else{
-			return false;
-		}
+	updatePage = function(type, category){
+		requestJson(movies,moviesListView,initialResponse,type, category);
+		return true;
 	}
 	changeList("Box Office");
 }
