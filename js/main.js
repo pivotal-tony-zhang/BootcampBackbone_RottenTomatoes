@@ -66,6 +66,11 @@ function changeList(targetList){
 }
 
 function onlineResponse(collection,view,data){
+	_.each(data.movies,function(curMovie){
+		if(curMovie.posters.thumbnail.indexOf("poster_default") !== -1){
+			curMovie.posters.thumbnail = "img/poster_not_found.jpg";
+		}
+	});
 	collection.reset(data.movies);
 	view.render();
 }
@@ -80,10 +85,10 @@ function init()
 		idAttribute: 'id',
 		defaults: {
 			title : "No Title found",
-			mpaa_rating : "N/A"
-			// posters: {
-				// thumbnail: INSERT NO THUMBNAIL FOUND HERE!!!!!!!!!!!!!!!!!!!!!!!!
-			// }
+			mpaa_rating : "N/A",
+			posters: {
+				thumbnail: "img/poster_not_found.jpg"
+			}
 		}
 	});
 	var Movies = Backbone.Collection.extend({
