@@ -21,7 +21,6 @@ function getApiUrl(type, category){
 		return undefined;
 	}
 }
-
 function requestJson(collection, view, callback, type, category, inputUrl){
 	if(navigator.onLine){
 		if(inputUrl===undefined){
@@ -42,7 +41,6 @@ function requestJson(collection, view, callback, type, category, inputUrl){
 		callback(collection, view, false, null, type, category);
 	}
 }
-
 function fixImageLink(origImageLink){
 	if(origImageLink.indexOf("poster_default") !== -1){
 		return "img/poster_not_found.jpg";
@@ -50,7 +48,13 @@ function fixImageLink(origImageLink){
 		return origImageLink;
 	}
 }
-
+function fixDate(originalDate) {
+	if(originalDate !== undefined){
+		return originalDate;
+	}else{
+		return "TBA";
+	}
+}
 function initialResponse(collection, view, success, data, type, category){
 	if(success){
 		onlineResponse(collection,view,type, category, data);
@@ -58,7 +62,12 @@ function initialResponse(collection, view, success, data, type, category){
 		offlineResponse(collection, view, type, category);
 	}
 }
-
+function onlineResponse(collection,view,type, category, data){
+	localStorage.setItem(category + "_" + type, JSON.stringify(data.movies));
+	collection.reset(data.movies);
+	view.render();
+	window.scrollTo(0, 0);
+}
 function offlineResponse(collection,view, type, category){
 	var offlineData = JSON.parse(localStorage.getItem(category + "_" + type));
 	_.each(offlineData, function(curMovie){
@@ -68,10 +77,11 @@ function offlineResponse(collection,view, type, category){
 		collection.reset(offlineData);
 		view.render();
 		window.scrollTo(0, 0);
+	}else{
+		document.createElement('
 	}
 	return true;
 }
-
 function changeList(targetList){
 	if(targetList==="Box Office"){
 		updatePage("box_office","movies");
@@ -103,14 +113,6 @@ function changeList(targetList){
 	}
 
 }
-
-function onlineResponse(collection,view,type, category, data){
-	localStorage.setItem(category + "_" + type, JSON.stringify(data.movies));
-	collection.reset(data.movies);
-	view.render();
-	window.scrollTo(0, 0);
-}
-
 function shortenDescription(origDescription){//TODO: fix function so that it works even for initials in names
 	var endCharIndex =  origDescription.search(/[a-z]([\.\?!])(?= )/);
 	if(endCharIndex === -1){
@@ -119,23 +121,26 @@ function shortenDescription(origDescription){//TODO: fix function so that it wor
 		return origDescription.substring(0,endCharIndex + 2) + "..";
 	}
 }
-
 function init() 
 {
 	Backbone.sync = function(method, model, success, error){
 		success();
 	}
 	var Movie = Backbone.Model.extend({
-		idAttribute: 'id',
-		defaults: {
-			title : "No Title Found",
-			mpaa_rating : "N/A",
-			synopsis: "No description found.",
-			links: {alternate: "javascript:void(0)"},
-			posters: {
-				thumbnail: "img/poster_not_found.jpg"
-			}
-		}
+		// idAttribute: 'id',
+		// defaults: {
+			// title : "No Title Found",
+			// mpaa_rating : "N/A",
+			// synopsis: "No description found.",
+			// links: {alternate: "javascript:void(0)"},
+			// posters: {
+				// thumbnail: "img/poster_not_found.jpg"
+			// },
+			// release_dates: {
+				// theater: "TBA",
+				// dvd: "TBA"
+			// }
+		// }
 	});
 	var Movies = Backbone.Collection.extend({
 		model: Movie
