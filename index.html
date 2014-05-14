@@ -19,34 +19,36 @@
 	<body>
 		<div id="container"></div>
 
-		<div id="nav_bar">
-			<a href="javascript:void(0)" onclick = "changeList('Box Office')">Home (Box Office)</a><!-- use equivalent of static final string after finding out what they are in web -->
+		<select id="nav_bar" onchange = "changeList(this.value)">
+				<option value = "Box Office">Home (Box Office)</option>
+				<option value = "In Theaters">In Theaters</option>
+				<option value = "Opening Movies">Opening Movies</option>
+				<option value = "Upcoming Movies">Upcoming Movies</option>
+			<!-- <a href="javascript:void(0)" onclick = "changeList('Box Office')">Home (Box Office)</a>
 			<a href="javascript:void(0)" onclick = "changeList('In Theaters')">In Theaters</a>
 			<a href="javascript:void(0)" onclick = "changeList('Opening Movies')">Opening Movies</a>
 			<a href="javascript:void(0)" onclick = "changeList('Upcoming Movies')">Upcoming Movies</a>
-			<a href="javascript:void(0)" onclick = "changeList('Top Rentals')">Top Rentals</a><!-- use equivalent of static final string after finding out what they are in web -->
+			<a href="javascript:void(0)" onclick = "changeList('Top Rentals')">Top Rentals</a>
 			<a href="javascript:void(0)" onclick = "changeList('Current Release DVDs')">Current Release DVDs</a>
 			<a href="javascript:void(0)" onclick = "changeList('New Release DVDs')">New Release DVDs</a>
-			<a href="javascript:void(0)" onclick = "changeList('Upcoming DVDs')">Upcoming DVDs</a>
+			<a href="javascript:void(0)" onclick = "changeList('Upcoming DVDs')">Upcoming DVDs</a> -->
 		</div>
 		<script type='text/template' id='movie-template'>
 		<div class = "movie">
 			<div class = "image">
 				<img align="top" src="<%= fixImageLink(posters.thumbnail) %>"/>
 			</div>
-			<div class = "content">
-				<div class = "title">
-					<%= title %>
-				</div>
 				<div class = "rating">
 					<%= mpaa_rating %>
 				</div>
-				<br>
-				<div class = "description">
-					<%= shortenDescription(synopsis) %><!--TODO: Fix function so that it works even for initials in names-->
+				<div class = "title">
+					<%= title %>
+					
+					<div class = "description">
+						<%= shortenDescription(synopsis) %><!--TODO: Fix function so that it works even for initials in names-->
+					</div>
+					<a href= "<%= links.alternate %>" class = "read_more" >Read more</a>
 				</div>
-				<a href= "<%= links.alternate %>" class = "read_more" >Read more</a>
-			</div>
 		</div>
 		
 		</script>

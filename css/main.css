@@ -1,18 +1,17 @@
 .movie {
-	height: 111px;
+	height: 161px;
 	border: 1px solid;
 }
 
 .image {
 	float: left;
-	margin-top: 10px;
+	margin-top: 35px;
 	margin-left: 5px;
 	margin-right: 5px;
 	border: 1px solid;
 }
 
 .title {
-	float:left;
 	font-weight: bold;
 	font-size: 16px;
 }
@@ -20,15 +19,20 @@
 .rating {
 	float:right;
 	font-size: 14px;
+	font-weight: bold;
 	border: 1px solid;
 	padding: 2px;
+	margin-right: 2px;
+	margin-top: 2px;
 	border-radius: 20px;
 }
 .description {
+	font-weight: normal;
 	font-size: 12px;
 }
 
 .read_more {
+	font-weight: normal;
 	font-size: 12px;
 }
 

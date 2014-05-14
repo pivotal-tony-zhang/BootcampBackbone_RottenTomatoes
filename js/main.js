@@ -30,7 +30,7 @@ function requestJson(collection, view, callback, type, category, inputUrl){
 		var req = $.ajax({
 			url : inputUrl,
 			dataType : "jsonp",
-			timeout : 5000
+			timeout : 20000
 		});
 		req.success(function(data){
 			callback(collection, view, true, data, type, category);
@@ -147,7 +147,6 @@ function init()
 			this.model.on('change',this.render,this);
 		},
 		render: function(){
-			// this.$el.empty();
 			this.$el.append(this.template(this.model.toJSON()));
 			return this;
 		}
