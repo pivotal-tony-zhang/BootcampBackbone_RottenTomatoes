@@ -27,6 +27,11 @@
 .description {
 	font-size: 12px;
 }
+
+.read_more {
+	font-size: 12px;
+}
+
 #nav_bar {
 	position: fixed;
 	background-color: #B0B0B0;

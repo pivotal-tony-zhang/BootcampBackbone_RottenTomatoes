@@ -81,14 +81,15 @@ function onlineResponse(collection,view,data){
 	// });
 	collection.reset(data.movies);
 	view.render();
+	window.scrollTo(0, 0);
 }
 
 function shortenDescription(origDescription){//TODO: fix function so that it works even for initials in names
-	var endOfFirstSentence = origDescription.indexOf(". ");
-	if(endOfFirstSentence==-1){
+	var endCharIndex =  origDescription.search(/[a-z]([\.\?!])(?= )/);
+	if(endCharIndex === -1){
 		return origDescription;
 	}else{
-		return origDescription.substring(0,endOfFirstSentence) + "...";
+		return origDescription.substring(0,endCharIndex + 2) + "..";
 	}
 }
 
